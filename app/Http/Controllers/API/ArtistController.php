@@ -54,7 +54,7 @@ class ArtistController extends Controller
         return response()->json($artist,200);
     }
 
-    public function post($id)
+    public function post()
     {
         $artist = [
             'id' => 1,
@@ -62,8 +62,6 @@ class ArtistController extends Controller
             'Gender' => 'Male',
             'genre' => 'Rap'
         ];
-        if ($id == 0)
-            return response()->json($artist,409);
         return response()->json($artist,201);
     }
 

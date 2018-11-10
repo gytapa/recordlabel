@@ -37,7 +37,7 @@ class SongController extends Controller
             'year' => 2
         ];
         if ($id == 0)
-            return response()->json($song,404);
+            return response()->json(null,404);
         return response()->json($song,200);
     }
 
@@ -50,11 +50,11 @@ class SongController extends Controller
             'year' => 2
         ];
         if ($id == 0)
-            return response()->json($song,405);
+            return response()->json($song,404);
         return response()->json($song,200);
     }
 
-    public function post($id)
+    public function post()
     {
         $song = [
             'id' => 1,
@@ -62,8 +62,6 @@ class SongController extends Controller
             'artist' => 1,
             'year' => 2
         ];
-        if ($id == 0)
-            return response()->json($song,409);
         return response()->json($song,201);
     }
 

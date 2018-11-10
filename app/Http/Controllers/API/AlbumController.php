@@ -53,7 +53,7 @@ class AlbumController extends Controller
         return response()->json($album,200);
     }
 
-    public function post($id)
+    public function post()
     {
         $album = [
             'id' => 1,
@@ -61,8 +61,7 @@ class AlbumController extends Controller
             'Year' => '2005',
             'Genre' => 'Rap'
         ];
-        if ($id == 0)
-            return response()->json($album,409);
+
         return response()->json($album,201);
     }
 
