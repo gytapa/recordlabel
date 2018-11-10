@@ -54,7 +54,7 @@ class StudioController extends Controller
         return response()->json($studio,200);
     }
 
-    public function post($id)
+    public function post()
     {
         $studio = [
             'id' => 1,
@@ -62,8 +62,6 @@ class StudioController extends Controller
             'address' => 'Vilnius',
             'quality' => 2
         ];
-        if ($id == 0)
-            return response()->json($studio,409);
         return response()->json($studio,201);
     }
 
