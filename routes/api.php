@@ -35,12 +35,10 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::put('/song/{id}','API\SongController@put');
     Route::post('/song','API\SongController@post');
     Route::delete('/song/{id}','API\SongController@delete');
+    //Studio methods
+    Route::get('/studio','API\StudioController@getAll');
+    Route::get('/studio/{id}','API\StudioController@get');
+    Route::put('/studio/{id}','API\StudioController@put');
+    Route::post('/studio','API\StudioController@post');
+    Route::delete('/studio/{id}','API\StudioController@delete');
 });
-
-
-//Studio methods
-Route::get('/studio','API\StudioController@getAll');
-Route::get('/studio/{id}','API\StudioController@get');
-Route::put('/studio/{id}','API\StudioController@put');
-Route::post('/studio','API\StudioController@post');
-Route::delete('/studio/{id}','API\StudioController@delete');
