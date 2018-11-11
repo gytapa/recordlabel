@@ -3,78 +3,87 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Artist;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ArtistController extends Controller
 {
 
     public function getAll()
     {
-        $artist =
-            [
-                [
-                    'id' => 1,
-                    'name' => 'Artist',
-                    'Gender' => 'Male',
-                    'genre' => 'Rap'
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'Artist',
-                    'Gender' => 'Male',
-                    'genre' => 'Rap'
-                ]
-            ];
 
-        return response()->json($artist, 200);
+        foreach (Artist::all() as $artist) {
+            $artists[] = $artist->ToJSONArray();
+        }
+        return response()->json($artists, 200);
     }
 
     public function get($id)
     {
-        $artist = [
-            'id' => 1,
-            'name' => 'Artist',
-            'Gender' => 'Male',
-            'genre' => 'Rap'
-        ];
-        if ($id == 0)
-            return response()->json($artist,404);
-        return response()->json($artist,200);
+        try {
+            $artist = Artist::findOrFail($id);
+            return response()->json(Artist::find($id)->ToJSONArray(), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $id, "message" => "Artist ID not found"], 404);
+        }
     }
+
 
     public function delete($id)
     {
-        $artist = [
-            'id' => 1,
-            'name' => 'Artist',
-            'Gender' => 'Male',
-            'genre' => 'Rap'
-        ];
-        if ($id == 0)
-            return response()->json($artist,405);
-        return response()->json($artist,200);
+        try {
+            $artist = Artist::findOrFail($id);
+            $artistRespnse = Artist::find($id)->ToJSONArray();
+            $artist->delete();
+            return response()->json(array_merge($artist->ToJSONArray(), ['message' => 'Artist deleted successfully.']), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $id, "message" => "Artist ID not found"], 404);
+        }
     }
 
-    public function post()
+    public function post(Request $request)
     {
-        $artist = [
-            'id' => 1,
-            'name' => 'Artist',
-            'Gender' => 'Male',
-            'genre' => 'Rap'
-        ];
-        return response()->json($artist,201);
+        $validator = Validator::make($request->all(),
+            [
+                'name' => 'required|string',
+                'gender' => 'required|integer|min:0|max:1',
+                'genre' => 'required|integer',
+            ]);
+
+        if ($validator->fails())
+            return response()->json($validator->messages(), 201);
+
+        $artist = new Artist();
+        $artist->name = $request->input('name');
+        $artist->gender = $request->input('gender');
+        $artist->genre = $request->input('genre');
+        $artist->save();
+        return response()->json(array_merge($artist->ToJSONArray(), ['message' => 'Artist created successfully.']), 201);
     }
 
-    public function put($id)
+    public function put(Request $request)
     {
-        $artist = [
-            'id' => 1,
-            'name' => 'Artist',
-            'Gender' => 'Male',
-            'genre' => 'Rap'
-        ];
-        if ($id == 0)
-            return response()->json($artist,404);
-        return response()->json($artist,200);
+        try {
+            $artist = Artist::findOrFail($request->input('id'));
+            $validator = Validator::make($request->all(),
+                [
+                    'name' => 'required|string',
+                    'gender' => 'required|integer|min:0|max:1',
+                    'genre' => 'required|integer',
+                ]);
+
+            if ($validator->fails())
+                return response()->json($validator->messages(), 201);
+
+            $artist->name = $request->input('name');
+            $artist->gender = $request->input('gender');
+            $artist->genre = $request->input('genre');
+            $artist->save();
+            return response()->json(array_merge($artist->ToJSONArray(), ['message' => 'Artist edited successfully.']), 201);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $request->input('id'), "message" => "Artist ID not found"], 404);
+        }
     }
 }

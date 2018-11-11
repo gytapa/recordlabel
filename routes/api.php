@@ -13,9 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('login', 'API\UserController@login');
+Route::post('register', 'API\UserController@register');
 
 //Song methods
 Route::get('/song','API\SongController@getAll');
@@ -25,12 +24,13 @@ Route::post('/song','API\SongController@post');
 Route::delete('/song/{id}','API\SongController@delete');
 
 //Artist methods
-Route::get('/artist','API\ArtistController@getAll');
-Route::get('/artist/{id}','API\ArtistController@get');
-Route::put('/artist/{id}','API\ArtistController@put');
-Route::post('/artist','API\ArtistController@post');
-Route::delete('/artist/{id}','API\ArtistController@delete');
-
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::get('/artist','API\ArtistController@getAll');
+    Route::get('/artist/{id}','API\ArtistController@get');
+    Route::put('/artist/{id}','API\ArtistController@put');
+    Route::post('/artist','API\ArtistController@post');
+    Route::delete('/artist/{id}','API\ArtistController@delete');
+});
 //Album methods
 Route::get('/album','API\AlbumController@getAll');
 Route::get('/album/{id}','API\AlbumController@get');
