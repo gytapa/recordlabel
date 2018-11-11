@@ -3,78 +3,93 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use App\Song;
 
 class SongController extends Controller
 {
 
     public function getAll()
     {
-        $studio =
-            [
-                [
-                    'id' => 1,
-                    'name' => 'SongName',
-                    'artist' => 1,
-                    'year' => 2
-                ],
-                [
-                    'id' => 1,
-                    'name' => 'SongName',
-                    'artist' => 1,
-                    'year' => 2
-                ]
-            ];
-
-        return response()->json($studio, 200);
+        foreach (Song::all() as $song) {
+            $songs[] = $song->ToJSONArray();
+        }
+        return response()->json($songs, 200);
     }
 
     public function get($id)
     {
-        $song = [
-            'id' => 1,
-            'name' => 'SongName',
-            'artist' => 1,
-            'year' => 2
-        ];
-        if ($id == 0)
-            return response()->json(null,404);
-        return response()->json($song,200);
+        try {
+            $song = Song::findOrFail($id);
+            return response()->json(Song::find($id)->ToJSONArray(), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $id, "message" => "Song ID not found"], 404);
+        }
     }
 
     public function delete($id)
     {
-        $song = [
-            'id' => 1,
-            'name' => 'SongName',
-            'artist' => 1,
-            'year' => 2
-        ];
-        if ($id == 0)
-            return response()->json($song,404);
-        return response()->json($song,200);
+        try {
+            $song = Song::findOrFail($id);
+            $songResponse = Song::find($id)->ToJSONArray();
+            $song->delete();
+            return response()->json(array_merge($song->ToJSONArray(), ['message' => 'Artist deleted successfully.']), 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $id, "message" => "Song ID not found"], 404);
+        }
     }
 
-    public function post()
+
+    public function post(Request $request)
     {
-        $song = [
-            'id' => 1,
-            'name' => 'SongName',
-            'artist' => 1,
-            'year' => 2
-        ];
-        return response()->json($song,201);
+        $validator = Validator::make($request->all(),
+            [
+                'name' => 'required|string',
+                'genre' => 'required|integer',
+                'year' => 'required|date',
+                'artist' => 'required|integer',
+                'album' => 'required|integer',
+            ]);
+
+        if ($validator->fails())
+            return response()->json($validator->messages(), 201);
+
+        $song = new Song();
+        $song->name = $request->input('name');
+        $song->genre = $request->input('genre');
+        $song->year = $request->input('year');
+        $song->artist = $request->input('artist');
+        $song->album = $request->input('album');
+        $song->save();
+        return response()->json(array_merge($song->ToJSONArray(), ['message' => 'Song created successfully.']), 201);
     }
 
-    public function put($id)
+    public function put(Request $request,$id)
     {
-        $song = [
-            'id' => 1,
-            'name' => 'SongName',
-            'artist' => 1,
-            'year' => 2
-        ];
-        if ($id == 0)
-            return response()->json($song,404);
-        return response()->json($song,200);
+        try {
+            $song = Song::findOrFail($id);
+            $validator = Validator::make($request->all(),
+                [
+                    'name' => 'required|string',
+                    'genre' => 'required|integer',
+                    'year' => 'required|date',
+                    'artist' => 'required|integer',
+                    'album' => 'required|integer',
+                ]);
+
+            if ($validator->fails())
+                return response()->json($validator->messages(), 201);
+
+            $song->name = $request->input('name');
+            $song->genre = $request->input('genre');
+            $song->year = $request->input('year');
+            $song->artist = $request->input('artist');
+            $song->album = $request->input('album');
+            $song->save();
+            return response()->json(array_merge($song->ToJSONArray(), ['message' => 'Song edited successfully.']), 201);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(["id" => $request->input('id'), "message" => "Song ID not found"], 404);
+        }
     }
 }
