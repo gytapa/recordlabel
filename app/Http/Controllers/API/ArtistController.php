@@ -47,9 +47,9 @@ class ArtistController extends Controller
     {
         $validator = Validator::make($request->all(),
             [
-                'name' => 'required|string',
+                'name'   => 'required|string',
                 'gender' => 'required|integer|min:0|max:1',
-                'genre' => 'required|integer',
+                'genre'  => 'required|integer',
             ]);
 
         if ($validator->fails())
