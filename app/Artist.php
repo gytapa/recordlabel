@@ -9,7 +9,7 @@ class Artist extends Model
     /**
      * @var string
      */
-    protected $table = 'artist';
+    protected $table = 'artists';
     protected $primaryKey = 'id';
     public $incrementing = true;
 
@@ -26,7 +26,14 @@ public function  ToJSONArray()
                     'name' => ($this->gender == 0 ? "MALE" : "FEMALE")
                 ],
         ];
-
 }
+    public static function exists($id)
+    {
+        $artist = Artist::where('id','=',$id);
+        if ($artist === null)
+            return false;
+        else
+            return true;
+    }
 
 }

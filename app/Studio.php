@@ -25,4 +25,13 @@ class Studio extends Model
 
     }
 
+    public static function exists($id)
+    {
+        $studio = Studio::where('id','=',$id);
+        if ($studio === null)
+            return false;
+        else
+            return true;
+    }
+
 }

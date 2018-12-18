@@ -50,7 +50,7 @@ class StudioController extends Controller
             ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 201);
+            return response()->json($validator->messages(), 400);
 
         $studio = new Studio();
         $studio->name = $request->input('name');
@@ -59,7 +59,6 @@ class StudioController extends Controller
         $studio->save();
         return response()->json(array_merge($studio->ToJSONArray(), ['message' => 'Studio created successfully.']), 201);
     }
-
 
     public function put(Request $request,$id)
     {
@@ -72,7 +71,7 @@ class StudioController extends Controller
             ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 201);
+            return response()->json($validator->messages(), 404);
         $studio->name = $request->input('name');
         $studio->address = $request->input('address');
         $studio->quality = $request->input('quality');

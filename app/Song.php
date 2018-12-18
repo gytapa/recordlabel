@@ -27,4 +27,13 @@ class Song extends Model
 
     }
 
+    public static function exists($id)
+    {
+        $song = Song::where('id','=',$id);
+        if ($song === null)
+            return false;
+        else
+            return true;
+    }
+
 }

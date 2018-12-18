@@ -26,4 +26,13 @@ class Album extends Model
 
     }
 
+    public static function exists($id)
+    {
+        $album = Album::where('id','=',$id);
+        if ($album === null)
+            return false;
+        else
+            return true;
+    }
+
 }

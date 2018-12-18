@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Genre;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Artist;
@@ -13,7 +14,6 @@ class ArtistController extends Controller
 
     public function getAll()
     {
-
         foreach (Artist::all() as $artist) {
             $artists[] = $artist->ToJSONArray();
         }
@@ -53,7 +53,9 @@ class ArtistController extends Controller
             ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 201);
+            return response()->json($validator->messages(), 400);
+        if (!Genre::exists($request->input('artist')))
+            return response()->json(['message' => 'Artist not found'], 400);
 
         $artist = new Artist();
         $artist->name = $request->input('name');
@@ -63,10 +65,10 @@ class ArtistController extends Controller
         return response()->json(array_merge($artist->ToJSONArray(), ['message' => 'Artist created successfully.']), 201);
     }
 
-    public function put(Request $request)
+    public function put(Request $request, $id)
     {
         try {
-            $artist = Artist::findOrFail($request->input('id'));
+            $artist = Artist::findOrFail($id);
             $validator = Validator::make($request->all(),
                 [
                     'name' => 'required|string',
@@ -75,7 +77,10 @@ class ArtistController extends Controller
                 ]);
 
             if ($validator->fails())
-                return response()->json($validator->messages(), 201);
+                return response()->json($validator->messages(), 400);
+
+            if (!Genre::exists($request->input('artist')))
+                return response()->json(['message' => 'Artist not found'], 400);
 
             $artist->name = $request->input('name');
             $artist->gender = $request->input('gender');
@@ -86,4 +91,5 @@ class ArtistController extends Controller
             return response()->json(["id" => $request->input('id'), "message" => "Artist ID not found"], 404);
         }
     }
+
 }

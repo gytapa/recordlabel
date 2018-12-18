@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Album;
+use App\Genre;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -53,7 +55,11 @@ class SongController extends Controller
             ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 201);
+            return response()->json($validator->messages(), 400);
+        if (!Genre::exists($request->input('artist')))
+            return response()->json(['message' => 'Genre not found'], 400);
+        if (!Album::exists($request->input('artist')))
+            return response()->json(['message' => 'Album not found'], 400);
 
         $song = new Song();
         $song->name = $request->input('name');
@@ -79,7 +85,12 @@ class SongController extends Controller
                 ]);
 
             if ($validator->fails())
-                return response()->json($validator->messages(), 201);
+                return response()->json($validator->messages(), 400);
+
+            if (!Genre::exists($request->input('artist')))
+                return response()->json(['message' => 'Genre not found'], 400);
+            if (!Album::exists($request->input('artist')))
+                return response()->json(['message' => 'Album not found'], 400);
 
             $song->name = $request->input('name');
             $song->genre = $request->input('genre');

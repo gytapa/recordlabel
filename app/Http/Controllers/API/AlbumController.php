@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Album;
+use App\Artist;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -51,7 +52,9 @@ class AlbumController extends Controller
             ]);
 
         if ($validator->fails())
-            return response()->json($validator->messages(), 201);
+            return response()->json($validator->messages(), 400);
+        if (!Artist::exists($request->input('artist')))
+            return response()->json(['message' => 'Artist not found'], 400);
 
         $album = new Album();
         $album->name = $request->input('name');
@@ -77,6 +80,9 @@ class AlbumController extends Controller
             if ($validator->fails())
                 return response()->json($validator->messages(), 201);
 
+            if (!Artist::exists($request->input('artist')))
+                return response()->json(['message' => 'Artist not found'], 400);
+
             $album->name = $request->input('name');
             $album->genre = $request->input('genre');
             $album->year = $request->input('year');
@@ -87,4 +93,6 @@ class AlbumController extends Controller
             return response()->json(["id" => $request->input('id'), "message" => "Album ID not found"], 404);
         }
     }
+
+
 }
